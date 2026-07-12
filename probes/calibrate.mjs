@@ -60,11 +60,12 @@ for (const shapeName of shapeNames) {
     }
     const measured = median(samples)
     const example = shape.make(1)
-    const estimate = estimateMemory(example)
+    const estimate = estimateMemory(example, shape.estimateOptions)
     const incumbent = objectSizeof(example)
     rows.push({
         shape: shapeName,
         family: shape.family,
+        estimateOptions: shape.estimateOptions ?? {},
         count,
         samples,
         measured,

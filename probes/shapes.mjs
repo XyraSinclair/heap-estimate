@@ -30,6 +30,15 @@ function tree(depth, seed) {
     }
 }
 
+const wideParsedJson = JSON.stringify(Object.fromEntries(
+    Array.from({ length: 30 }, (_, index) => [`key${index}`, index]),
+))
+const indexedDictionaryJson = JSON.stringify(Object.fromEntries([
+    ...Array.from({ length: 30 }, (_, index) => [String(index), index]),
+    ['a', 1],
+    ['discard', 2],
+]))
+
 export const shapes = {
     'object/0-keys': {
         family: 'plain object',
@@ -45,6 +54,26 @@ export const shapes = {
         family: 'plain object',
         count: 25_000,
         make: (index) => literalObject(16, index),
+    },
+    'object/json-30-keys-auto': {
+        family: 'wide parsed object',
+        count: 25_000,
+        make: (index) => {
+            const value = JSON.parse(wideParsedJson)
+            value.key0 = index
+            return value
+        },
+    },
+    'object/dictionary-indexed-30': {
+        family: 'dictionary object with elements',
+        count: 20_000,
+        estimateOptions: { objectMode: 'dictionary' },
+        make: (index) => {
+            const value = JSON.parse(indexedDictionaryJson)
+            delete value.discard
+            value.a = index
+            return value
+        },
     },
     'array/packed-smi-32': {
         family: 'array',
@@ -65,6 +94,15 @@ export const shapes = {
             return value
         },
     },
+    'array/sparse-smi-100k': {
+        family: 'sparse array',
+        count: 25_000,
+        make: (index) => {
+            const value = []
+            value[100_000] = index
+            return value
+        },
+    },
     'array/objects-8': {
         family: 'array',
         count: 20_000,
@@ -79,6 +117,13 @@ export const shapes = {
         family: 'string',
         count: 45_000,
         make: (index) => uniqueFlatString(index, 64, true),
+    },
+    'string/boxed-one-byte-3': {
+        family: 'boxed string',
+        count: 20_000,
+        make: (index) => Object(JSON.parse(JSON.stringify(
+            index.toString(36).padStart(3, '0'),
+        ))),
     },
     'map/8-smi-pairs': {
         family: 'Map',
@@ -125,11 +170,15 @@ export const shapes = {
 
 export const reducedShapeNames = [
     'object/4-keys',
+    'object/json-30-keys-auto',
+    'object/dictionary-indexed-30',
     'array/packed-smi-32',
     'array/packed-double-32',
     'array/holey-smi-32',
+    'array/sparse-smi-100k',
     'string/one-byte-64',
     'string/two-byte-64',
+    'string/boxed-one-byte-3',
     'map/8-smi-pairs',
     'set/8-smis',
     'tree/binary-depth-3',
