@@ -15,6 +15,14 @@
     ],
     "license": "MIT",
     "author": "Xyra Sinclair",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/XyraSinclair/heap-estimate.git"
+    },
+    "homepage": "https://github.com/XyraSinclair/heap-estimate#readme",
+    "bugs": {
+        "url": "https://github.com/XyraSinclair/heap-estimate/issues"
+    },
     "type": "module",
     "sideEffects": false,
     "exports": {
@@ -39,7 +47,7 @@
         "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
         "build": "npm run clean && tsc -p tsconfig.build.json",
         "test": "vitest run",
-        "calibrate": "npm run build && node --expose-gc probes/calibrate.mjs --full --write-readme",
+        "calibrate": "npm run build && node --expose-gc probes/calibrate.mjs --write-readme",
         "calibrate:ci": "npm run build && node --expose-gc probes/calibrate.mjs --reduced --gate",
         "bench": "npm run calibrate && node probes/bench.mjs",
         "prepack": "npm run build"
