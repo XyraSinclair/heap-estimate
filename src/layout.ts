@@ -26,8 +26,9 @@ export interface LayoutConstants {
 }
 
 // Node 24.13.1 / V8 13.6. The uncompressed sizes were checked with
-// %DebugPrint on the official darwin-arm64 build. Compressed tagged fields
-// follow V8's 4-byte kTaggedSize layout used by official linux-x64 builds.
+// %DebugPrint on the official darwin-arm64 build and calibrated on official
+// Linux x64 too. Compressed fields follow V8's 4-byte kTaggedSize layout for
+// custom builds/embedders; stock Node 24 reports compression disabled.
 export const LAYOUTS: Readonly<Record<V8Layout, LayoutConstants>> = {
     compressed: {
         name: 'compressed',
@@ -91,7 +92,7 @@ export function detectV8Layout(): V8Layout {
     if (enabled === 0 || enabled === '0' || enabled === false) return 'uncompressed'
     if (enabled === 1 || enabled === '1' || enabled === true) return 'compressed'
 
-    // Pointer compression is the normal 64-bit V8 configuration. Unknown
+    // Pointer compression is V8's common embedder configuration. Unknown
     // embedders can override this with opts.layout.
     return 'compressed'
 }

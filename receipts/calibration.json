@@ -1,0 +1,332 @@
+{
+  "generatedAt": "2026-07-12T01:15:56.544Z",
+  "node": "v24.13.1",
+  "v8": "13.6.233.17-node.40",
+  "platform": "darwin",
+  "arch": "arm64",
+  "layout": "uncompressed",
+  "runs": 7,
+  "method": "median of isolated child processes after five forced GCs; root backing store allocated before baseline",
+  "rows": [
+    {
+      "shape": "object/0-keys",
+      "family": "plain object",
+      "count": 80000,
+      "samples": [
+        56.0978,
+        56.148,
+        56.0978,
+        56.148,
+        56.148,
+        56.0978,
+        56.0978
+      ],
+      "measured": 56.0978,
+      "estimate": 56,
+      "objectSizeof": 2,
+      "errorPercent": -0.17433838760165182,
+      "absoluteErrorPercent": 0.17433838760165182,
+      "objectSizeofErrorPercent": -96.4347977995572
+    },
+    {
+      "shape": "object/4-keys",
+      "family": "plain object",
+      "count": 60000,
+      "samples": [
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667
+      ],
+      "measured": 56.23546666666667,
+      "estimate": 56,
+      "objectSizeof": 25,
+      "errorPercent": -0.41871559110976353,
+      "absoluteErrorPercent": 0.41871559110976353,
+      "objectSizeofErrorPercent": -55.544069460316855
+    },
+    {
+      "shape": "object/16-keys",
+      "family": "plain object",
+      "count": 25000,
+      "samples": [
+        152.56576,
+        152.80992,
+        152.80992,
+        152.80992,
+        152.80992,
+        152.80992,
+        152.80992
+      ],
+      "measured": 152.80992,
+      "estimate": 152,
+      "objectSizeof": 104,
+      "errorPercent": -0.5300179464788708,
+      "absoluteErrorPercent": 0.5300179464788708,
+      "objectSizeofErrorPercent": -31.941591226538176
+    },
+    {
+      "shape": "array/packed-smi-32",
+      "family": "array",
+      "count": 35000,
+      "samples": [
+        304.36205714285717,
+        304.36205714285717,
+        304.36205714285717,
+        304.36205714285717,
+        304.36205714285717,
+        304.36205714285717,
+        304.36205714285717
+      ],
+      "measured": 304.36205714285717,
+      "estimate": 304,
+      "objectSizeof": 88,
+      "errorPercent": -0.11895607036432622,
+      "absoluteErrorPercent": 0.11895607036432622,
+      "objectSizeofErrorPercent": -71.08706623089493
+    },
+    {
+      "shape": "array/packed-double-32",
+      "family": "array",
+      "count": 25000,
+      "samples": [
+        304.50816,
+        304.50816,
+        304.50816,
+        304.50816,
+        304.50816,
+        304.50816,
+        304.50816
+      ],
+      "measured": 304.50816,
+      "estimate": 304,
+      "objectSizeof": 152,
+      "errorPercent": -0.16687894340827364,
+      "absoluteErrorPercent": 0.16687894340827364,
+      "objectSizeofErrorPercent": -50.08343947170414
+    },
+    {
+      "shape": "array/holey-smi-32",
+      "family": "array",
+      "count": 35000,
+      "samples": [
+        304.48297142857143,
+        304.48297142857143,
+        304.4861714285714,
+        304.48297142857143,
+        304.48297142857143,
+        304.48297142857143,
+        304.48297142857143
+      ],
+      "measured": 304.48297142857143,
+      "estimate": 304,
+      "objectSizeof": 375,
+      "errorPercent": -0.15862017711710746,
+      "absoluteErrorPercent": 0.15862017711710746,
+      "objectSizeofErrorPercent": 23.159596820990412
+    },
+    {
+      "shape": "array/objects-8",
+      "family": "array",
+      "count": 20000,
+      "samples": [
+        368.528,
+        368.5184,
+        368.528,
+        368.5184,
+        368.528,
+        368.528,
+        368.528
+      ],
+      "measured": 368.528,
+      "estimate": 368,
+      "objectSizeof": 97,
+      "errorPercent": -0.14327269569748294,
+      "absoluteErrorPercent": 0.14327269569748294,
+      "objectSizeofErrorPercent": -73.67906916163766
+    },
+    {
+      "shape": "string/one-byte-64",
+      "family": "string",
+      "count": 60000,
+      "samples": [
+        80.11466666666666,
+        80.11466666666666,
+        80.1392,
+        80.11466666666666,
+        80.1392,
+        80.1392,
+        80.1392
+      ],
+      "measured": 80.1392,
+      "estimate": 80,
+      "objectSizeof": 76,
+      "errorPercent": -0.17369776588735902,
+      "absoluteErrorPercent": 0.17369776588735902,
+      "objectSizeofErrorPercent": -5.165012877592991
+    },
+    {
+      "shape": "string/two-byte-64",
+      "family": "string",
+      "count": 45000,
+      "samples": [
+        144.1856,
+        144.1528888888889,
+        144.1528888888889,
+        144.1856,
+        144.1528888888889,
+        144.1528888888889,
+        144.1528888888889
+      ],
+      "measured": 144.1528888888889,
+      "estimate": 144,
+      "objectSizeof": 76,
+      "errorPercent": -0.1060602323459091,
+      "absoluteErrorPercent": 0.1060602323459091,
+      "objectSizeofErrorPercent": -47.27819845596034
+    },
+    {
+      "shape": "map/8-smi-pairs",
+      "family": "Map",
+      "count": 20000,
+      "samples": [
+        296.1768,
+        296.1768,
+        296.1768,
+        296.1768,
+        296.1768,
+        296.1768,
+        296.1768
+      ],
+      "measured": 296.1768,
+      "estimate": 296,
+      "objectSizeof": 65,
+      "errorPercent": -0.05969407462029919,
+      "absoluteErrorPercent": 0.05969407462029919,
+      "objectSizeofErrorPercent": -78.05364903665648
+    },
+    {
+      "shape": "map/32-smi-pairs",
+      "family": "Map",
+      "count": 8000,
+      "samples": [
+        968.732,
+        968.732,
+        968.732,
+        968.732,
+        968.732,
+        968.732,
+        968.732
+      ],
+      "measured": 968.732,
+      "estimate": 968,
+      "objectSizeof": 285,
+      "errorPercent": -0.07556269432618834,
+      "absoluteErrorPercent": 0.07556269432618834,
+      "objectSizeofErrorPercent": -70.58009852054025
+    },
+    {
+      "shape": "set/8-smis",
+      "family": "Set",
+      "count": 20000,
+      "samples": [
+        232.2048,
+        232.2048,
+        232.2048,
+        232.2124,
+        232.2048,
+        232.2124,
+        232.2048
+      ],
+      "measured": 232.2048,
+      "estimate": 232,
+      "objectSizeof": 23,
+      "errorPercent": -0.08819800452015025,
+      "absoluteErrorPercent": 0.08819800452015025,
+      "objectSizeofErrorPercent": -90.09495066424122
+    },
+    {
+      "shape": "set/32-smis",
+      "family": "Set",
+      "count": 8000,
+      "samples": [
+        712.732,
+        712.732,
+        712.732,
+        712.732,
+        712.732,
+        712.732,
+        712.732
+      ],
+      "measured": 712.732,
+      "estimate": 712,
+      "objectSizeof": 97,
+      "errorPercent": -0.10270340043662567,
+      "absoluteErrorPercent": 0.10270340043662567,
+      "objectSizeofErrorPercent": -86.39039639022802
+    },
+    {
+      "shape": "tree/binary-depth-3",
+      "family": "nested tree",
+      "count": 8000,
+      "samples": [
+        592.937,
+        592.263,
+        592.263,
+        592.263,
+        592.263,
+        592.263,
+        592.581
+      ],
+      "measured": 592.263,
+      "estimate": 592,
+      "objectSizeof": 293,
+      "errorPercent": -0.04440594803322741,
+      "absoluteErrorPercent": 0.04440594803322741,
+      "objectSizeofErrorPercent": -50.528734700631304
+    },
+    {
+      "shape": "array-buffer/256",
+      "family": "ArrayBuffer",
+      "count": 20000,
+      "samples": [
+        352.7512,
+        352.8324,
+        352.8324,
+        352.7512,
+        352.7512,
+        352.7512,
+        352.7512
+      ],
+      "measured": 352.7512,
+      "estimate": 352,
+      "objectSizeof": 2,
+      "errorPercent": -0.2129546263768863,
+      "absoluteErrorPercent": 0.2129546263768863,
+      "objectSizeofErrorPercent": -99.43302815128622
+    },
+    {
+      "shape": "typed-array/u8-256",
+      "family": "typed array",
+      "count": 18000,
+      "samples": [
+        456.6942222222222,
+        456.6942222222222,
+        456.6942222222222,
+        456.6942222222222,
+        456.6942222222222,
+        456.6942222222222,
+        456.88444444444445
+      ],
+      "measured": 456.6942222222222,
+      "estimate": 456,
+      "objectSizeof": 256,
+      "errorPercent": -0.15201029232299065,
+      "absoluteErrorPercent": 0.15201029232299065,
+      "objectSizeofErrorPercent": -43.94498823428659
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "generatedAt": "2026-07-12T01:19:34.834Z",
+  "node": "v24.13.1",
+  "v8": "13.6.233.17-node.40",
+  "note": "Different functions intentionally return different size metrics; agreement checking is disabled.",
+  "report": {
+    "candidates": [
+      {
+        "name": "stringifyLength",
+        "isAsync": false,
+        "nsPerOp": 98121.22727272379,
+        "opsPerSec": 10191.474646159311,
+        "band": {
+          "q1": 94105.66071428507,
+          "med": 98121.22727272379,
+          "q3": 104944.54058441527
+        },
+        "calls": 7378,
+        "measuredMs": 751.1139189999999,
+        "perInput": [
+          {
+            "inputIndex": 0,
+            "nsPerOp": 98121.22727272379,
+            "band": {
+              "q1": 94105.66071428507,
+              "med": 98121.22727272379,
+              "q3": 104944.54058441527
+            },
+            "calls": 7378,
+            "measuredMs": 751.1139189999999
+          }
+        ],
+        "vsFastest": 1,
+        "tiedWithNext": false,
+        "agrees": null
+      },
+      {
+        "name": "objectSizeof",
+        "isAsync": false,
+        "nsPerOp": 222208.33333335575,
+        "opsPerSec": 4500.28126757877,
+        "band": {
+          "q1": 210638.83333336737,
+          "med": 222208.33333335575,
+          "q3": 238784.66666667463
+        },
+        "calls": 3215,
+        "measuredMs": 751.435684999993,
+        "perInput": [
+          {
+            "inputIndex": 0,
+            "nsPerOp": 222208.33333335575,
+            "band": {
+              "q1": 210638.83333336737,
+              "med": 222208.33333335575,
+              "q3": 238784.66666667463
+            },
+            "calls": 3215,
+            "measuredMs": 751.435684999993
+          }
+        ],
+        "vsFastest": 2.264630595332212,
+        "tiedWithNext": false,
+        "agrees": null
+      },
+      {
+        "name": "heapEstimate",
+        "isAsync": false,
+        "nsPerOp": 259208.33333335244,
+        "opsPerSec": 3857.900659057745,
+        "band": {
+          "q1": 240895.8333333165,
+          "med": 259208.33333335244,
+          "q3": 279067.4642857257
+        },
+        "calls": 2780,
+        "measuredMs": 750.775791999994,
+        "perInput": [
+          {
+            "inputIndex": 0,
+            "nsPerOp": 259208.33333335244,
+            "band": {
+              "q1": 240895.8333333165,
+              "med": 259208.33333335244,
+              "q3": 279067.4642857257
+            },
+            "calls": 2780,
+            "measuredMs": 750.775791999994
+          }
+        ],
+        "vsFastest": 2.6417151572400726,
+        "tiedWithNext": false,
+        "agrees": null
+      }
+    ],
+    "inputCount": 1,
+    "floorNs": 7.84329383009835,
+    "disagreements": [],
+    "ok": true
+  }
+}
