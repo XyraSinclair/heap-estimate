@@ -53,6 +53,23 @@ const hasOwn = Function.call.bind(Object.prototype.hasOwnProperty) as (
 const objectPrototype = Object.prototype
 const nullPrototype = null
 const arrayIndexPattern = /^(?:0|[1-9]\d*)$/
+const bigintPrototype = Object.getPrototypeOf(Object(0n)) as object
+const symbolPrototype = Object.getPrototypeOf(Object(Symbol())) as object
+const wellKnownSymbols = new Set<symbol>([
+    Symbol.asyncIterator,
+    Symbol.hasInstance,
+    Symbol.isConcatSpreadable,
+    Symbol.iterator,
+    Symbol.match,
+    Symbol.matchAll,
+    Symbol.replace,
+    Symbol.search,
+    Symbol.species,
+    Symbol.split,
+    Symbol.toPrimitive,
+    Symbol.toStringTag,
+    Symbol.unscopables,
+])
 
 function nextPowerOfTwo(value: number): number {
     let power = 1
@@ -235,7 +252,7 @@ export function estimateMemoryDetailed(
             const symbol = current as symbol
             if (seenSymbols.has(symbol)) continue
             seenSymbols.add(symbol)
-            if (Symbol.keyFor(symbol) !== undefined) continue
+            if (Symbol.keyFor(symbol) !== undefined || wellKnownSymbols.has(symbol)) continue
             add('symbols', constants.symbol)
             if (symbol.description !== undefined) queue.push(symbol.description)
             continue
@@ -356,10 +373,15 @@ export function estimateMemoryDetailed(
             continue
         }
 
-        if (object instanceof Number || object instanceof Boolean ||
-            object instanceof String) {
+        const prototype = Object.getPrototypeOf(object) as object | null
+        if (object instanceof Number || object instanceof Boolean || object instanceof String ||
+            prototype === bigintPrototype || prototype === symbolPrototype) {
             add('objects', constants.primitiveWrapper)
-            queue.push(object.valueOf())
+            if (object instanceof Number) queue.push(Number.prototype.valueOf.call(object))
+            else if (object instanceof Boolean) queue.push(Boolean.prototype.valueOf.call(object))
+            else if (object instanceof String) queue.push(String.prototype.valueOf.call(object))
+            else if (prototype === bigintPrototype) queue.push(BigInt.prototype.valueOf.call(object))
+            else queue.push(Symbol.prototype.valueOf.call(object))
             const custom = enqueueOwnValues(object, isArrayIndex)
             add('objects', propertyStoreSize(custom, constants))
             continue
@@ -395,7 +417,6 @@ export function estimateMemoryDetailed(
             // hidden-class descriptors. Charge their flat storage too.
             for (const key of keys) if (typeof key === 'string' && !isArrayIndex(key)) queue.push(key)
         } else {
-            const prototype = Object.getPrototypeOf(object) as object | null
             add('objects', fastObjectSize(
                 namedProperties,
                 indexedProperties,
