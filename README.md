@@ -10,8 +10,9 @@ One `Map` with eight small-integer pairs, four answers:
 | forced-GC retained delta | **296.2** |
 
 The JSON result is `{}` because Maps are not JSON objects. `object-sizeof`
-walks the entries but misses V8's 32-byte `JSMap` and 248-byte
-`OrderedHashMap` allocation. `heap-estimate` models both.
+walks the entries but misses V8's 32-byte `JSMap` and 264-byte
+`OrderedHashMap` allocation (248 slot bytes plus its 16-byte header).
+`heap-estimate` models both for the 296-byte total.
 
 ```ts
 import estimateMemory, { estimateMemoryDetailed } from 'heap-estimate'
@@ -57,27 +58,34 @@ Raw samples and machine metadata are in `receipts/calibration.json`. Run
 three-repetition cross-family subset and fails if any absolute error exceeds
 15%.
 
+The scripts under `probes/` import development dependencies to produce these
+receipts; they are not runtime tools or part of the dependency-free API.
+
 <!-- calibration:start -->
 Node 24.13.1 / V8 13.6.233.17-node.40, darwin-arm64, uncompressed tagged pointers; 7 isolated runs per row.
 
 | shape | measured B/instance | heap-estimate | object-sizeof | ours error | theirs error |
 |---|---:|---:|---:|---:|---:|
-| object/0-keys | 56.1 | 56.0 | 2.0 | -0.3% | -96.4% |
+| object/0-keys | 56.1 | 56.0 | 2.0 | -0.2% | -96.4% |
 | object/4-keys | 56.2 | 56.0 | 25.0 | -0.4% | -55.5% |
-| object/16-keys | 152.6 | 152.0 | 104.0 | -0.4% | -31.8% |
-| array/packed-smi-32 | 304.4 | 304.0 | 88.0 | -0.1% | -71.1% |
-| array/packed-double-32 | 304.5 | 304.0 | 152.0 | -0.2% | -50.1% |
-| array/holey-smi-32 | 304.5 | 304.0 | 375.0 | -0.2% | +23.2% |
-| array/objects-8 | 368.5 | 368.0 | 97.0 | -0.1% | -73.7% |
-| string/one-byte-64 | 80.1 | 80.0 | 76.0 | -0.1% | -5.1% |
+| object/16-keys | 152.8 | 152.0 | 104.0 | -0.5% | -31.9% |
+| object/json-30-keys-auto | 264.6 | 264.0 | 311.0 | -0.2% | +17.6% |
+| object/dictionary-indexed-30 | 536.5 | 536.0 | 227.0 | -0.1% | -57.7% |
+| array/packed-smi-32 | 304.2 | 304.0 | 88.0 | -0.1% | -71.1% |
+| array/packed-double-32 | 304.3 | 304.0 | 152.0 | -0.1% | -50.0% |
+| array/holey-smi-32 | 304.3 | 304.0 | 375.0 | -0.1% | +23.2% |
+| array/sparse-smi-100k | 176.6 | 176.0 | 1200003.0 | -0.4% | +679275.4% |
+| array/objects-8 | 368.2 | 368.0 | 97.0 | -0.1% | -73.7% |
+| string/one-byte-64 | 80.1 | 80.0 | 76.0 | -0.2% | -5.2% |
 | string/two-byte-64 | 144.2 | 144.0 | 76.0 | -0.1% | -47.3% |
+| string/boxed-one-byte-3 | 56.3 | 56.0 | 5.0 | -0.5% | -91.1% |
 | map/8-smi-pairs | 296.2 | 296.0 | 65.0 | -0.1% | -78.1% |
-| map/32-smi-pairs | 968.7 | 968.0 | 285.0 | -0.1% | -70.6% |
+| map/32-smi-pairs | 968.8 | 968.0 | 285.0 | -0.1% | -70.6% |
 | set/8-smis | 232.2 | 232.0 | 23.0 | -0.1% | -90.1% |
 | set/32-smis | 712.7 | 712.0 | 97.0 | -0.1% | -86.4% |
-| tree/binary-depth-3 | 592.3 | 592.0 | 293.0 | -0.0% | -50.5% |
+| tree/binary-depth-3 | 592.4 | 592.0 | 293.0 | -0.1% | -50.5% |
 | array-buffer/256 | 352.8 | 352.0 | 2.0 | -0.2% | -99.4% |
-| typed-array/u8-256 | 456.7 | 456.0 | 256.0 | -0.2% | -43.9% |
+| typed-array/u8-256 | 456.7 | 456.0 | 256.0 | -0.2% | -44.0% |
 <!-- calibration:end -->
 
 The reduced gate also passes in the official Node 24.13.1 Linux x64 image.
@@ -128,10 +136,16 @@ share objects. The function adds every visited object to that set; a later
 call charges zero for an already-seen subtree.
 
 V8 does not expose fast-vs-dictionary property mode to JavaScript.
-`objectMode: 'auto'` uses dictionary accounting for 20 or more named
-properties. Use `'dictionary'` when `delete` forced a smaller object into
-dictionary mode, or `'fast'` when a wide object literal retained fast
-properties.
+Construction history is therefore unobservable, so `objectMode: 'auto'`
+always uses fast-property accounting. This is the right default for the
+canonical cache-sizing case: an independent review measured a 30-key
+`JSON.parse` object at 261 B.
+
+Assignment-built objects can transition to dictionary properties at the same
+visible width. The review measured that 30-key case at 1,624 B, roughly six
+times the fast shape; auto/fast will underestimate it accordingly. Use
+`objectMode: 'dictionary'` when assignment or deletion history is known. The
+dictionary model estimates that measured 30-key case at exactly 1,624 B.
 
 ## Speed
 
@@ -156,6 +170,10 @@ drift. Run `npm run bench`; the complete report is written to
   object V8 can create. Node/V8 releases can change layouts.
 - The model assumes exact visible array capacity. Arrays grown by repeated
   `push` may retain spare backing-store capacity that reflection cannot see.
+- Dense-vs-`NumberDictionary` elements use a conservative approximation of
+  V8's transition policy. Exact decisions incorporate construction history,
+  current capacity, density, and internal thresholds such as `kMaxGap`, none
+  of which are fully observable from JavaScript.
 - Strings are assumed to be flat sequential one-byte or two-byte strings.
   JavaScript cannot reliably distinguish slices, ropes, external strings, or
   internalized literals. The interning option makes that uncertainty explicit.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-12T01:23:00.877Z",
+  "generatedAt": "2026-07-12T09:30:34.640Z",
   "node": "v24.13.1",
   "v8": "13.6.233.17-node.40",
   "platform": "darwin",
@@ -11,235 +11,333 @@
     {
       "shape": "object/0-keys",
       "family": "plain object",
+      "estimateOptions": {},
       "count": 80000,
       "samples": [
-        56.148,
-        56.148,
-        56.148,
+        56.0978,
         56.148,
         56.0978,
+        56.148,
+        56.148,
         56.0978,
         56.0978
       ],
-      "measured": 56.148,
+      "measured": 56.0978,
       "estimate": 56,
       "objectSizeof": 2,
-      "errorPercent": -0.26358908598704,
-      "absoluteErrorPercent": 0.26358908598704,
-      "objectSizeofErrorPercent": -96.43798532449954
+      "errorPercent": -0.17433838760165182,
+      "absoluteErrorPercent": 0.17433838760165182,
+      "objectSizeofErrorPercent": -96.4347977995572
     },
     {
       "shape": "object/4-keys",
       "family": "plain object",
+      "estimateOptions": {},
       "count": 60000,
       "samples": [
-        56.121066666666664,
         56.23546666666667,
         56.23546666666667,
-        56.121066666666664,
-        56.15186666666666,
         56.23546666666667,
-        56.2308
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667,
+        56.23546666666667
       ],
-      "measured": 56.2308,
+      "measured": 56.23546666666667,
       "estimate": 56,
       "objectSizeof": 25,
-      "errorPercent": -0.4104512117914063,
-      "absoluteErrorPercent": 0.4104512117914063,
-      "objectSizeofErrorPercent": -55.540380005264026
+      "errorPercent": -0.41871559110976353,
+      "absoluteErrorPercent": 0.41871559110976353,
+      "objectSizeofErrorPercent": -55.544069460316855
     },
     {
       "shape": "object/16-keys",
       "family": "plain object",
+      "estimateOptions": {},
       "count": 25000,
       "samples": [
-        152.56576,
         152.80992,
         152.80992,
-        152.56576,
-        152.56576,
         152.80992,
-        152.56576
+        152.80992,
+        152.80992,
+        152.80992,
+        152.80992
       ],
-      "measured": 152.56576,
+      "measured": 152.80992,
       "estimate": 152,
       "objectSizeof": 104,
-      "errorPercent": -0.37083025706424005,
-      "absoluteErrorPercent": 0.37083025706424005,
-      "objectSizeofErrorPercent": -31.832673333780797
+      "errorPercent": -0.5300179464788708,
+      "absoluteErrorPercent": 0.5300179464788708,
+      "objectSizeofErrorPercent": -31.941591226538176
+    },
+    {
+      "shape": "object/json-30-keys-auto",
+      "family": "wide parsed object",
+      "estimateOptions": {},
+      "count": 25000,
+      "samples": [
+        264.56416,
+        264.56416,
+        264.56416,
+        264.56416,
+        264.61056,
+        264.56416,
+        264.56416
+      ],
+      "measured": 264.56416,
+      "estimate": 264,
+      "objectSizeof": 311,
+      "errorPercent": -0.21324127954444597,
+      "absoluteErrorPercent": 0.21324127954444597,
+      "objectSizeofErrorPercent": 17.55182561386999
+    },
+    {
+      "shape": "object/dictionary-indexed-30",
+      "family": "dictionary object with elements",
+      "estimateOptions": {
+        "objectMode": "dictionary"
+      },
+      "count": 20000,
+      "samples": [
+        536.4588,
+        536.4588,
+        536.4588,
+        536.4588,
+        536.4588,
+        536.4588,
+        536.4588
+      ],
+      "measured": 536.4588,
+      "estimate": 536,
+      "objectSizeof": 227,
+      "errorPercent": -0.08552380909773435,
+      "absoluteErrorPercent": 0.08552380909773435,
+      "objectSizeofErrorPercent": -57.68547370273356
     },
     {
       "shape": "array/packed-smi-32",
       "family": "array",
+      "estimateOptions": {},
       "count": 35000,
       "samples": [
-        304.36205714285717,
-        304.36205714285717,
-        304.36205714285717,
-        304.36205714285717,
-        304.36205714285717,
-        304.36205714285717,
-        304.36205714285717
+        304.1856,
+        304.1856,
+        304.1856,
+        304.1856,
+        304.1856,
+        304.1856,
+        304.1856
       ],
-      "measured": 304.36205714285717,
+      "measured": 304.1856,
       "estimate": 304,
       "objectSizeof": 88,
-      "errorPercent": -0.11895607036432622,
-      "absoluteErrorPercent": 0.11895607036432622,
-      "objectSizeofErrorPercent": -71.08706623089493
+      "errorPercent": -0.061015380083745636,
+      "absoluteErrorPercent": 0.061015380083745636,
+      "objectSizeofErrorPercent": -71.07029392581371
     },
     {
       "shape": "array/packed-double-32",
       "family": "array",
+      "estimateOptions": {},
       "count": 25000,
       "samples": [
-        304.50816,
-        304.50816,
-        304.50816,
-        304.50816,
-        304.50816,
-        304.50816,
-        304.50816
+        304.25984,
+        304.25984,
+        304.25984,
+        304.25984,
+        304.25984,
+        304.25984,
+        304.25984
       ],
-      "measured": 304.50816,
+      "measured": 304.25984,
       "estimate": 304,
       "objectSizeof": 152,
-      "errorPercent": -0.16687894340827364,
-      "absoluteErrorPercent": 0.16687894340827364,
-      "objectSizeofErrorPercent": -50.08343947170414
+      "errorPercent": -0.08540068909521445,
+      "absoluteErrorPercent": 0.08540068909521445,
+      "objectSizeofErrorPercent": -50.04270034454761
     },
     {
       "shape": "array/holey-smi-32",
       "family": "array",
+      "estimateOptions": {},
       "count": 35000,
       "samples": [
-        304.48297142857143,
-        304.48297142857143,
-        304.48297142857143,
-        304.48297142857143,
-        304.48297142857143,
-        304.48297142857143,
-        304.48297142857143
+        304.3193142857143,
+        304.3193142857143,
+        304.3193142857143,
+        304.3193142857143,
+        304.3193142857143,
+        304.3193142857143,
+        304.3193142857143
       ],
-      "measured": 304.48297142857143,
+      "measured": 304.3193142857143,
       "estimate": 304,
       "objectSizeof": 375,
-      "errorPercent": -0.15862017711710746,
-      "absoluteErrorPercent": 0.15862017711710746,
-      "objectSizeofErrorPercent": 23.159596820990412
+      "errorPercent": -0.10492738078875942,
+      "absoluteErrorPercent": 0.10492738078875942,
+      "objectSizeofErrorPercent": 23.225829711198077
+    },
+    {
+      "shape": "array/sparse-smi-100k",
+      "family": "sparse array",
+      "estimateOptions": {},
+      "count": 25000,
+      "samples": [
+        176.63328,
+        176.63328,
+        176.63328,
+        176.63328,
+        176.63328,
+        176.63328,
+        176.63328
+      ],
+      "measured": 176.63328,
+      "estimate": 176,
+      "objectSizeof": 1200003,
+      "errorPercent": -0.358528132410842,
+      "absoluteErrorPercent": 0.358528132410842,
+      "objectSizeofErrorPercent": 679275.3702586511
     },
     {
       "shape": "array/objects-8",
       "family": "array",
+      "estimateOptions": {},
       "count": 20000,
       "samples": [
-        368.528,
-        368.528,
-        368.528,
-        368.5184,
-        368.528,
-        368.528,
-        368.528
+        368.2044,
+        368.214,
+        368.214,
+        368.214,
+        368.214,
+        368.2044,
+        368.214
       ],
-      "measured": 368.528,
+      "measured": 368.214,
       "estimate": 368,
       "objectSizeof": 97,
-      "errorPercent": -0.14327269569748294,
-      "absoluteErrorPercent": 0.14327269569748294,
-      "objectSizeofErrorPercent": -73.67906916163766
+      "errorPercent": -0.05811837681348309,
+      "absoluteErrorPercent": 0.05811837681348309,
+      "objectSizeofErrorPercent": -73.65662359388834
     },
     {
       "shape": "string/one-byte-64",
       "family": "string",
+      "estimateOptions": {},
       "count": 60000,
       "samples": [
-        80.11466666666666,
-        80.11466666666666,
-        80.1392,
-        80.11466666666666,
-        80.11466666666666,
-        80.11466666666666,
-        80.11466666666666
+        80.1516,
+        80.1516,
+        80.12706666666666,
+        80.1516,
+        80.12706666666666,
+        80.12706666666666,
+        80.12706666666666
       ],
-      "measured": 80.11466666666666,
+      "measured": 80.12706666666666,
       "estimate": 80,
       "objectSizeof": 76,
-      "errorPercent": -0.1431281829377867,
-      "absoluteErrorPercent": 0.1431281829377867,
-      "objectSizeofErrorPercent": -5.135971773790898
+      "errorPercent": -0.15858145312528296,
+      "absoluteErrorPercent": 0.15858145312528296,
+      "objectSizeofErrorPercent": -5.150652380469019
     },
     {
       "shape": "string/two-byte-64",
       "family": "string",
+      "estimateOptions": {},
       "count": 45000,
       "samples": [
-        144.1528888888889,
-        144.1528888888889,
-        144.1528888888889,
-        144.1528888888889,
-        144.1528888888889,
-        144.1528888888889,
-        144.1528888888889
+        144.1694222222222,
+        144.1694222222222,
+        144.1694222222222,
+        144.1694222222222,
+        144.1694222222222,
+        144.1694222222222,
+        144.1694222222222
       ],
-      "measured": 144.1528888888889,
+      "measured": 144.1694222222222,
       "estimate": 144,
       "objectSizeof": 76,
-      "errorPercent": -0.1060602323459091,
-      "absoluteErrorPercent": 0.1060602323459091,
-      "objectSizeofErrorPercent": -47.27819845596034
+      "errorPercent": -0.11751605826723971,
+      "absoluteErrorPercent": 0.11751605826723971,
+      "objectSizeofErrorPercent": -47.28424458630771
+    },
+    {
+      "shape": "string/boxed-one-byte-3",
+      "family": "boxed string",
+      "estimateOptions": {},
+      "count": 20000,
+      "samples": [
+        56.2548,
+        56.2548,
+        56.2548,
+        56.2548,
+        56.2548,
+        56.2548,
+        56.2548
+      ],
+      "measured": 56.2548,
+      "estimate": 56,
+      "objectSizeof": 5,
+      "errorPercent": -0.4529391269722815,
+      "absoluteErrorPercent": 0.4529391269722815,
+      "objectSizeofErrorPercent": -91.11186956490825
     },
     {
       "shape": "map/8-smi-pairs",
       "family": "Map",
+      "estimateOptions": {},
       "count": 20000,
       "samples": [
-        296.1768,
-        296.1768,
-        296.3192,
-        296.1768,
-        296.1768,
-        296.1768,
-        296.1768
+        296.196,
+        296.196,
+        296.196,
+        296.196,
+        296.196,
+        296.196,
+        296.196
       ],
-      "measured": 296.1768,
+      "measured": 296.196,
       "estimate": 296,
       "objectSizeof": 65,
-      "errorPercent": -0.05969407462029919,
-      "absoluteErrorPercent": 0.05969407462029919,
-      "objectSizeofErrorPercent": -78.05364903665648
+      "errorPercent": -0.0661723993571913,
+      "absoluteErrorPercent": 0.0661723993571913,
+      "objectSizeofErrorPercent": -78.05507164175074
     },
     {
       "shape": "map/32-smi-pairs",
       "family": "Map",
+      "estimateOptions": {},
       "count": 8000,
       "samples": [
-        968.732,
-        968.732,
-        968.732,
-        968.732,
-        968.732,
-        968.732,
-        968.732
+        968.78,
+        968.78,
+        968.78,
+        968.78,
+        968.78,
+        968.78,
+        968.78
       ],
-      "measured": 968.732,
+      "measured": 968.78,
       "estimate": 968,
       "objectSizeof": 285,
-      "errorPercent": -0.07556269432618834,
-      "absoluteErrorPercent": 0.07556269432618834,
-      "objectSizeofErrorPercent": -70.58009852054025
+      "errorPercent": -0.0805136357067624,
+      "absoluteErrorPercent": 0.0805136357067624,
+      "objectSizeofErrorPercent": -70.58155618406656
     },
     {
       "shape": "set/8-smis",
       "family": "Set",
+      "estimateOptions": {},
       "count": 20000,
       "samples": [
+        232.2048,
+        232.2124,
+        232.2048,
         232.2124,
         232.2124,
         232.2124,
-        232.2124,
-        232.2124,
-        232.2124,
-        232.2124
+        232.2048
       ],
       "measured": 232.2124,
       "estimate": 232,
@@ -251,6 +349,7 @@
     {
       "shape": "set/32-smis",
       "family": "Set",
+      "estimateOptions": {},
       "count": 8000,
       "samples": [
         712.732,
@@ -271,62 +370,65 @@
     {
       "shape": "tree/binary-depth-3",
       "family": "nested tree",
+      "estimateOptions": {},
       "count": 8000,
       "samples": [
-        592.263,
-        592.263,
-        592.263,
-        592.263,
-        592.263,
-        592.263,
-        592.263
+        592.351,
+        592.669,
+        592.351,
+        592.351,
+        592.351,
+        592.351,
+        592.351
       ],
-      "measured": 592.263,
+      "measured": 592.351,
       "estimate": 592,
       "objectSizeof": 293,
-      "errorPercent": -0.04440594803322741,
-      "absoluteErrorPercent": 0.04440594803322741,
-      "objectSizeofErrorPercent": -50.528734700631304
+      "errorPercent": -0.059255407689022065,
+      "absoluteErrorPercent": 0.059255407689022065,
+      "objectSizeofErrorPercent": -50.53608417981906
     },
     {
       "shape": "array-buffer/256",
       "family": "ArrayBuffer",
+      "estimateOptions": {},
       "count": 20000,
       "samples": [
-        352.7512,
-        352.7512,
-        352.7512,
-        352.7512,
-        352.7512,
-        352.8324,
-        352.7512
+        352.794,
+        352.794,
+        352.794,
+        352.794,
+        352.794,
+        352.794,
+        352.794
       ],
-      "measured": 352.7512,
+      "measured": 352.794,
       "estimate": 352,
       "objectSizeof": 2,
-      "errorPercent": -0.2129546263768863,
-      "absoluteErrorPercent": 0.2129546263768863,
-      "objectSizeofErrorPercent": -99.43302815128622
+      "errorPercent": -0.22506051690221,
+      "absoluteErrorPercent": 0.22506051690221,
+      "objectSizeofErrorPercent": -99.43309693475513
     },
     {
       "shape": "typed-array/u8-256",
       "family": "typed array",
+      "estimateOptions": {},
       "count": 18000,
       "samples": [
-        456.69244444444445,
-        456.69244444444445,
-        456.69244444444445,
-        456.6942222222222,
-        456.6942222222222,
-        456.69244444444445,
-        456.69244444444445
+        456.74177777777777,
+        456.74177777777777,
+        456.74177777777777,
+        456.74177777777777,
+        456.74177777777777,
+        456.74177777777777,
+        456.74
       ],
-      "measured": 456.69244444444445,
+      "measured": 456.74177777777777,
       "estimate": 456,
       "objectSizeof": 256,
-      "errorPercent": -0.15162161162678964,
-      "absoluteErrorPercent": 0.15162161162678964,
-      "objectSizeofErrorPercent": -43.944770027579956
+      "errorPercent": -0.1624063779290786,
+      "absoluteErrorPercent": 0.1624063779290786,
+      "objectSizeofErrorPercent": -43.95082463322334
     }
   ]
 }

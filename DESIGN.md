@@ -48,13 +48,18 @@ Fast object literals use
 `Object.prototype` shape is special because its initial map reserves four
 in-object property fields. Dictionary mode uses the observed Node 24
 `NameDictionary` form: six prefix slots and three slots per capacity bucket.
-Deletion history is not reflectable, hence the `objectMode` override.
+Construction and deletion history are not reflectable. Auto therefore uses
+fast accounting at every visible width, matching wide literals and
+`JSON.parse`; callers who know that mutation forced dictionary properties can
+select the `objectMode` override.
 
-An array is its shell plus an exact-sized elements store. Tagged stores use
-one tagged slot per visible index, including holes. An all-numeric array with
-any non-SMI number is modeled as a FixedDoubleArray with eight-byte unboxed
-elements. This is an assumption: a history that transitioned a numeric array
-back to tagged elements is not observable.
+An array is its shell plus an elements store. Dense tagged stores use one
+tagged slot per visible index, including holes. An all-numeric dense array
+with any non-SMI number is modeled as a FixedDoubleArray with eight-byte
+unboxed elements. Sparse reflected shapes use the observed NumberDictionary
+form: four prefix slots and three slots per capacity bucket. The same elements
+store model is added independently to fast- and dictionary-property objects.
+Element-kind and capacity history remain unobservable.
 
 For current ordered collections, capacity is the next power of two at least
 as large as size, with minima of four for Map and eight for Set. A Map table
@@ -79,10 +84,18 @@ reports `(heapUsed delta + arrayBuffers delta) / N`. The parent takes a median
 of seven full-run samples or three CI samples. This isolates shape state,
 removes root-array storage from the delta, and limits scheduler/load drift.
 
+Calibration families are chosen adversarially against the estimator's
+branches, not to flatter it. The reduced gate includes every shape that has
+exposed a branch error: the sparse 100k-index array, 30-key parsed object in
+auto mode, dictionary-forced object with 30 indexed elements, and boxed
+String. In the current seven-run receipt their signed errors are respectively
+-0.4%, -0.2%, -0.1%, and -0.5%.
+
 The 15% gate covers plain objects, packed SMI arrays, packed double arrays,
-holey arrays, one- and two-byte strings, Maps, Sets, and nested trees. The
-full receipt additionally covers object-valued arrays, more capacities,
-ArrayBuffer, and typed-array view-plus-buffer ownership. Raw samples are
+holey and sparse arrays, wide parsed and dictionary-property objects, boxed,
+one-byte, and two-byte strings, Maps, Sets, and nested trees. The full receipt
+additionally covers object-valued arrays, more capacities, ArrayBuffer, and
+typed-array view-plus-buffer ownership. The gate remains 15%; raw samples are
 committed in `receipts/calibration.json`.
 
 ## Deliberate exclusions
