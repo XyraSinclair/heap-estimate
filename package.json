@@ -1,0 +1,52 @@
+{
+    "name": "heap-estimate",
+    "version": "0.1.0",
+    "description": "Retained-heap estimates for JavaScript values, calibrated against real V8 heap deltas.",
+    "keywords": [
+        "memory",
+        "heap",
+        "v8",
+        "sizeof",
+        "retained-size",
+        "profiling",
+        "map",
+        "set",
+        "typed-array"
+    ],
+    "license": "MIT",
+    "author": "Xyra Sinclair",
+    "type": "module",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist",
+        "DESIGN.md"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "scripts": {
+        "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+        "build": "npm run clean && tsc -p tsconfig.build.json",
+        "test": "vitest run",
+        "calibrate": "npm run build && node --expose-gc probes/calibrate.mjs --full --write-readme",
+        "calibrate:ci": "npm run build && node --expose-gc probes/calibrate.mjs --reduced --gate",
+        "bench": "npm run calibrate && node probes/bench.mjs",
+        "prepack": "npm run build"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.0",
+        "cyclebench": "^0.1.0",
+        "object-sizeof": "^2.6.5",
+        "typescript": "^5.5.0",
+        "vitest": "^1.6.0"
+    }
+}
