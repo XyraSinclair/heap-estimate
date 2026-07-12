@@ -41,6 +41,23 @@ describe('retained graph traversal', () => {
         expect(() => estimateMemory(set, uncompressed)).not.toThrow()
     })
 
+    it('bypasses hostile Map and Set subclass iterators', () => {
+        class HostileMap extends Map<unknown, unknown> {
+            override [Symbol.iterator](): MapIterator<[unknown, unknown]> {
+                throw new Error('hostile Map iterator')
+            }
+        }
+        class HostileSet extends Set<unknown> {
+            override [Symbol.iterator](): SetIterator<unknown> {
+                throw new Error('hostile Set iterator')
+            }
+        }
+        const child = { ok: true }
+        const map = new HostileMap([[child, child]])
+        const set = new HostileSet([map, child])
+        expect(() => estimateMemory(set, uncompressed)).not.toThrow()
+    })
+
     it('does not invoke getters while inspecting own properties', () => {
         const value = Object.defineProperty({}, 'danger', {
             get: () => { throw new Error('getter ran') },
@@ -131,6 +148,10 @@ describe('V8 representations', () => {
     it('handles local, registered, and well-known symbols', () => {
         expect(estimateMemory(Symbol.for('shared'), uncompressed)).toBe(0)
         expect(estimateMemory(Symbol.iterator, uncompressed)).toBe(0)
+        if ('dispose' in Symbol) expect(estimateMemory(Symbol.dispose, uncompressed)).toBe(0)
+        if ('asyncDispose' in Symbol) {
+            expect(estimateMemory(Symbol.asyncDispose, uncompressed)).toBe(0)
+        }
         expect(estimateMemory(Symbol('local'), uncompressed)).toBe(48)
     })
 
@@ -139,6 +160,10 @@ describe('V8 representations', () => {
         expect(estimateMemory(Object(1n), uncompressed)).toBe(56)
         expect(estimateMemory(Object(Symbol.for('shared')), uncompressed)).toBe(32)
         expect(estimateMemory(() => 1, uncompressed)).toBe(64)
+    })
+
+    it('does not charge String wrapper index or length accessors as custom properties', () => {
+        expect(estimateMemory(Object('abc'), uncompressed)).toBe(56)
     })
 })
 

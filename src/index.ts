@@ -52,6 +52,10 @@ const nullPrototype = null
 const arrayIndexPattern = /^(?:0|[1-9]\d*)$/
 const bigintPrototype = Object.getPrototypeOf(Object(0n)) as object
 const symbolPrototype = Object.getPrototypeOf(Object(Symbol())) as object
+const symbolConstructor = Symbol as SymbolConstructor & {
+    readonly dispose?: symbol
+    readonly asyncDispose?: symbol
+}
 const wellKnownSymbols = new Set<symbol>([
     Symbol.asyncIterator,
     Symbol.hasInstance,
@@ -67,6 +71,10 @@ const wellKnownSymbols = new Set<symbol>([
     Symbol.toStringTag,
     Symbol.unscopables,
 ])
+if (symbolConstructor.dispose !== undefined) wellKnownSymbols.add(symbolConstructor.dispose)
+if (symbolConstructor.asyncDispose !== undefined) {
+    wellKnownSymbols.add(symbolConstructor.asyncDispose)
+}
 
 function nextPowerOfTwo(value: number): number {
     let power = 1
@@ -336,7 +344,7 @@ export function estimateMemoryDetailed(
 
         if (object instanceof Map) {
             add('collections', constants.mapShell + orderedHashTableSize(object.size, 'map', constants))
-            for (const [key, entryValue] of object) {
+            for (const [key, entryValue] of Map.prototype.entries.call(object)) {
                 queue.push(key, entryValue)
             }
             const custom = enqueueOwnValues(object)
@@ -346,7 +354,7 @@ export function estimateMemoryDetailed(
 
         if (object instanceof Set) {
             add('collections', constants.setShell + orderedHashTableSize(object.size, 'set', constants))
-            for (const entryValue of object) queue.push(entryValue)
+            for (const entryValue of Set.prototype.values.call(object)) queue.push(entryValue)
             const custom = enqueueOwnValues(object)
             add('collections', propertyStoreSize(custom, constants))
             continue
@@ -414,7 +422,8 @@ export function estimateMemoryDetailed(
             else if (object instanceof String) queue.push(String.prototype.valueOf.call(object))
             else if (prototype === bigintPrototype) queue.push(BigInt.prototype.valueOf.call(object))
             else queue.push(Symbol.prototype.valueOf.call(object))
-            const custom = enqueueOwnValues(object, isArrayIndex)
+            const custom = enqueueOwnValues(object, (key) =>
+                (object instanceof String && key === 'length') || isArrayIndex(key))
             add('objects', propertyStoreSize(custom, constants))
             continue
         }
