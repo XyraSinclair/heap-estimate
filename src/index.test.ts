@@ -66,6 +66,12 @@ describe('V8 representations', () => {
         expect(estimateMemory(holey, compressed)).toBe(40)
     })
 
+    it('models sparse arrays with a NumberDictionary and walks only present elements', () => {
+        const sparse: unknown[] = []
+        sparse[100_000] = 1
+        expect(estimateMemory(sparse, uncompressed)).toBe(176)
+    })
+
     it('distinguishes one-byte and two-byte flat strings', () => {
         expect(estimateMemory('x'.repeat(16), compressed)).toBe(32)
         expect(estimateMemory('π'.repeat(16), compressed)).toBe(48)
@@ -92,6 +98,26 @@ describe('V8 representations', () => {
         const fast = estimateMemory(value, { ...uncompressed, objectMode: 'fast' })
         const dictionary = estimateMemory(value, { ...uncompressed, objectMode: 'dictionary' })
         expect(dictionary).toBeGreaterThan(fast * 5)
+    })
+
+    it('defaults wide parsed objects to fast-property accounting', () => {
+        const source = Object.fromEntries(
+            Array.from({ length: 30 }, (_, index) => [`key${index}`, index]),
+        )
+        const value = JSON.parse(JSON.stringify(source)) as object
+        expect(estimateMemory(value, uncompressed)).toBe(264)
+        expect(estimateMemory(value, { ...uncompressed, objectMode: 'dictionary' })).toBe(1624)
+    })
+
+    it('charges indexed elements separately from dictionary properties', () => {
+        const source = Object.fromEntries([
+            ...Array.from({ length: 30 }, (_, index) => [String(index), index] as const),
+            ['a', 1],
+            ['discard', 2],
+        ])
+        const value = JSON.parse(JSON.stringify(source)) as Record<string, number>
+        delete value.discard
+        expect(estimateMemory(value, { ...uncompressed, objectMode: 'dictionary' })).toBe(536)
     })
 
     it('counts a shared ArrayBuffer once across multiple views', () => {

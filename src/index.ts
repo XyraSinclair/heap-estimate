@@ -20,8 +20,9 @@ export interface EstimateMemoryOptions {
     layout?: V8Layout | 'auto'
     /**
      * V8 does not expose fast-vs-dictionary properties to JavaScript. Auto
-     * uses dictionary accounting for 20+ named properties; override when
-     * deletion forced a smaller object into dictionary mode.
+     * uses fast-property accounting because construction history is
+     * unobservable; override when assignment or deletion caused dictionary
+     * mode.
      */
     objectMode?: ObjectMode
 }
@@ -46,10 +47,6 @@ export interface DetailedMemoryEstimate {
     layout: V8Layout
 }
 
-const hasOwn = Function.call.bind(Object.prototype.hasOwnProperty) as (
-    value: object,
-    key: PropertyKey,
-) => boolean
 const objectPrototype = Object.prototype
 const nullPrototype = null
 const arrayIndexPattern = /^(?:0|[1-9]\d*)$/
@@ -137,6 +134,27 @@ function dictionaryObjectSize(entries: number, constants: LayoutConstants): numb
     return constants.objectHeader + dictionary
 }
 
+function elementsStoreSize(
+    indexedProperties: number,
+    maximumIndex: number,
+    constants: LayoutConstants,
+    slotWidth = constants.taggedSlot,
+): number {
+    if (indexedProperties === 0) return 0
+
+    // kMaxGap is only one input to V8's transition decision. This threshold
+    // preserves ordinary short holey stores while recognizing unambiguously
+    // sparse reflected shapes.
+    const dense = maximumIndex < indexedProperties * 2 + 1024
+    if (dense) {
+        return align8(constants.fixedArrayHeader + (maximumIndex + 1) * slotWidth)
+    }
+
+    const capacity = nextPowerOfTwo(Math.max(4, Math.ceil(indexedProperties * 1.5)))
+    // NumberDictionary has four prefix slots and three slots per bucket.
+    return align8(constants.fixedArrayHeader + (4 + capacity * 3) * constants.taggedSlot)
+}
+
 function fastObjectSize(
     namedProperties: number,
     indexedProperties: number,
@@ -151,18 +169,11 @@ function fastObjectSize(
         bytes = align8(constants.objectHeader + namedProperties * constants.taggedSlot)
     }
 
-    if (indexedProperties > 0) {
-        const dense = maximumIndex < indexedProperties * 2 + 16
-        if (dense) {
-            bytes += align8(
-                constants.fixedArrayHeader + (maximumIndex + 1) * constants.taggedSlot,
-            )
-        } else {
-            const capacity = nextPowerOfTwo(Math.max(4, Math.ceil(indexedProperties * 1.5)))
-            bytes += align8(constants.fixedArrayHeader + (3 + capacity * 3) * constants.taggedSlot)
-        }
-    }
-    return bytes
+    return bytes + elementsStoreSize(
+        indexedProperties,
+        maximumIndex,
+        constants,
+    )
 }
 
 function bigintSize(value: bigint, constants: LayoutConstants): number {
@@ -274,31 +285,52 @@ export function estimateMemoryDetailed(
 
         if (Array.isArray(object)) {
             const array = object as unknown[]
+            const keys = Reflect.ownKeys(array)
             let allNumeric = true
             let hasNonSmi = false
-            for (let index = 0; index < array.length; index++) {
-                if (!hasOwn(array, index)) continue
-                const element = array[index]
-                if (typeof element !== 'number') allNumeric = false
-                else if (!isSmi(element, layout)) hasNonSmi = true
-            }
-            const doubleElements = allNumeric && hasNonSmi
-            let bytes = constants.arrayHeader
-            if (array.length > 0) {
-                bytes += align8(
-                    constants.fixedArrayHeader +
-                    array.length * (doubleElements ? 8 : constants.taggedSlot),
-                )
-            }
-            add('arrays', bytes)
-            if (!doubleElements) {
-                for (let index = 0; index < array.length; index++) {
-                    if (hasOwn(array, index)) queue.push(array[index])
+            let indexedProperties = 0
+            let maximumIndex = -1
+            let customProperties = 0
+            const indexedValues: unknown[] = []
+            for (const key of keys) {
+                if (key === 'length') continue
+                const descriptor = Reflect.getOwnPropertyDescriptor(array, key)
+                if (descriptor === undefined) continue
+
+                if (!isArrayIndex(key)) {
+                    customProperties++
+                    if ('value' in descriptor) queue.push(descriptor.value)
+                    else {
+                        if (descriptor.get !== undefined) queue.push(descriptor.get)
+                        if (descriptor.set !== undefined) queue.push(descriptor.set)
+                    }
+                    continue
                 }
+
+                indexedProperties++
+                maximumIndex = Math.max(maximumIndex, Number(key))
+                if (!('value' in descriptor)) {
+                    allNumeric = false
+                    if (descriptor.get !== undefined) queue.push(descriptor.get)
+                    if (descriptor.set !== undefined) queue.push(descriptor.set)
+                    continue
+                }
+                indexedValues.push(descriptor.value)
+                if (typeof descriptor.value !== 'number') allNumeric = false
+                else if (!isSmi(descriptor.value, layout)) hasNonSmi = true
             }
-            const custom = enqueueOwnValues(array, (key) =>
-                key === 'length' || isArrayIndex(key))
-            add('arrays', propertyStoreSize(custom, constants))
+            const dense = maximumIndex < indexedProperties * 2 + 1024
+            const doubleElements = dense && allNumeric && hasNonSmi
+            add('arrays', constants.arrayHeader + elementsStoreSize(
+                indexedProperties,
+                maximumIndex,
+                constants,
+                doubleElements ? 8 : constants.taggedSlot,
+            ))
+            if (!doubleElements) {
+                for (const element of indexedValues) queue.push(element)
+            }
+            add('arrays', propertyStoreSize(customProperties, constants))
             continue
         }
 
@@ -407,15 +439,13 @@ export function estimateMemoryDetailed(
             }
         }
 
-        const mode = options.objectMode === 'dictionary' ||
-            (options.objectMode !== 'fast' && namedProperties >= 20)
-            ? 'dictionary'
-            : 'fast'
+        const mode = options.objectMode === 'dictionary' ? 'dictionary' : 'fast'
         if (mode === 'dictionary') {
-            add('objects', dictionaryObjectSize(namedProperties, constants))
-            // Dictionary property names live in the table rather than shared
-            // hidden-class descriptors. Charge their flat storage too.
-            for (const key of keys) if (typeof key === 'string' && !isArrayIndex(key)) queue.push(key)
+            add('objects', dictionaryObjectSize(namedProperties, constants) + elementsStoreSize(
+                indexedProperties,
+                maximumIndex,
+                constants,
+            ))
         } else {
             add('objects', fastObjectSize(
                 namedProperties,
