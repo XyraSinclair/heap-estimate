@@ -62,14 +62,14 @@ Node 24.13.1 / V8 13.6.233.17-node.40, darwin-arm64, uncompressed tagged pointer
 
 | shape | measured B/instance | heap-estimate | object-sizeof | ours error | theirs error |
 |---|---:|---:|---:|---:|---:|
-| object/0-keys | 56.1 | 56.0 | 2.0 | -0.2% | -96.4% |
+| object/0-keys | 56.1 | 56.0 | 2.0 | -0.3% | -96.4% |
 | object/4-keys | 56.2 | 56.0 | 25.0 | -0.4% | -55.5% |
-| object/16-keys | 152.8 | 152.0 | 104.0 | -0.5% | -31.9% |
+| object/16-keys | 152.6 | 152.0 | 104.0 | -0.4% | -31.8% |
 | array/packed-smi-32 | 304.4 | 304.0 | 88.0 | -0.1% | -71.1% |
 | array/packed-double-32 | 304.5 | 304.0 | 152.0 | -0.2% | -50.1% |
 | array/holey-smi-32 | 304.5 | 304.0 | 375.0 | -0.2% | +23.2% |
 | array/objects-8 | 368.5 | 368.0 | 97.0 | -0.1% | -73.7% |
-| string/one-byte-64 | 80.1 | 80.0 | 76.0 | -0.2% | -5.2% |
+| string/one-byte-64 | 80.1 | 80.0 | 76.0 | -0.1% | -5.1% |
 | string/two-byte-64 | 144.2 | 144.0 | 76.0 | -0.1% | -47.3% |
 | map/8-smi-pairs | 296.2 | 296.0 | 65.0 | -0.1% | -78.1% |
 | map/32-smi-pairs | 968.7 | 968.0 | 285.0 | -0.1% | -70.6% |
@@ -141,9 +141,9 @@ measured:
 
 | candidate | median time/op | ops/s | vs stringify |
 |---|---:|---:|---:|
-| `JSON.stringify(value).length` | 98.1µs | 10.2k | 1× |
-| `object-sizeof(value)` | 222µs | 4.50k | 2.26× |
-| `heap-estimate(value)` | 259µs | 3.86k | 2.64× |
+| `JSON.stringify(value).length` | 91.2µs | 11.0k | 1× |
+| `object-sizeof(value)` | 209µs | 4.79k | 2.29× |
+| `heap-estimate(value)` | 239µs | 4.18k | 2.62× |
 
 The candidates intentionally compute different answers, so cyclebench's
 agreement check is disabled. It still interleaves them to reduce machine
