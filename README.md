@@ -66,7 +66,7 @@ Node 24.13.1 / V8 13.6.233.17-node.40, darwin-arm64, uncompressed tagged pointer
 
 | shape | measured B/instance | heap-estimate | object-sizeof | ours error | theirs error |
 |---|---:|---:|---:|---:|---:|
-| object/0-keys | 56.1 | 56.0 | 2.0 | -0.2% | -96.4% |
+| object/0-keys | 56.1 | 56.0 | 2.0 | -0.3% | -96.4% |
 | object/4-keys | 56.2 | 56.0 | 25.0 | -0.4% | -55.5% |
 | object/16-keys | 152.8 | 152.0 | 104.0 | -0.5% | -31.9% |
 | object/json-30-keys-auto | 264.6 | 264.0 | 311.0 | -0.2% | +17.6% |
@@ -74,6 +74,8 @@ Node 24.13.1 / V8 13.6.233.17-node.40, darwin-arm64, uncompressed tagged pointer
 | array/packed-smi-32 | 304.2 | 304.0 | 88.0 | -0.1% | -71.1% |
 | array/packed-double-32 | 304.3 | 304.0 | 152.0 | -0.1% | -50.0% |
 | array/holey-smi-32 | 304.3 | 304.0 | 375.0 | -0.1% | +23.2% |
+| array/prealloc-1000-empty | 8048.2 | 8048.0 | 12001.0 | -0.0% | +49.1% |
+| array/prealloc-32-front | 304.3 | 304.0 | 375.0 | -0.1% | +23.2% |
 | array/sparse-smi-100k | 176.6 | 176.0 | 1200003.0 | -0.4% | +679275.4% |
 | array/objects-8 | 368.2 | 368.0 | 97.0 | -0.1% | -73.7% |
 | string/one-byte-64 | 80.1 | 80.0 | 76.0 | -0.2% | -5.2% |
@@ -155,9 +157,14 @@ measured:
 
 | candidate | median time/op | ops/s | vs stringify |
 |---|---:|---:|---:|
-| `JSON.stringify(value).length` | 91.2µs | 11.0k | 1× |
-| `object-sizeof(value)` | 209µs | 4.79k | 2.29× |
-| `heap-estimate(value)` | 239µs | 4.18k | 2.62× |
+| `JSON.stringify(value).length` | 34.2µs | 29.2k | 1× |
+| `object-sizeof(value)` | 103µs | 9.75k | 3.0× |
+| `heap-estimate(value)` | 171µs | 5.86k | 5.0× |
+
+The walk reads property descriptors rather than property values, which
+costs some of that gap and buys a correctness guarantee: getters are never
+invoked, so a value with accessor properties (or a throwing getter) is
+estimated, not executed.
 
 The candidates intentionally compute different answers, so cyclebench's
 agreement check is disabled. It still interleaves them to reduce machine

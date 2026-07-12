@@ -142,6 +142,14 @@ function dictionaryObjectSize(entries: number, constants: LayoutConstants): numb
     return constants.objectHeader + dictionary
 }
 
+function numberDictionarySize(indexedProperties: number, constants: LayoutConstants): number {
+    const capacity = nextPowerOfTwo(Math.max(4, Math.ceil(indexedProperties * 1.5)))
+    // NumberDictionary has four prefix slots and three slots per bucket.
+    return align8(constants.fixedArrayHeader + (4 + capacity * 3) * constants.taggedSlot)
+}
+
+/* Plain-object elements path only: objects have no length/preallocation
+ * idiom, so the reflected shape (count + maximum index) is all there is. */
 function elementsStoreSize(
     indexedProperties: number,
     maximumIndex: number,
@@ -149,18 +157,40 @@ function elementsStoreSize(
     slotWidth = constants.taggedSlot,
 ): number {
     if (indexedProperties === 0) return 0
-
-    // kMaxGap is only one input to V8's transition decision. This threshold
-    // preserves ordinary short holey stores while recognizing unambiguously
-    // sparse reflected shapes.
     const dense = maximumIndex < indexedProperties * 2 + 1024
     if (dense) {
         return align8(constants.fixedArrayHeader + (maximumIndex + 1) * slotWidth)
     }
+    return numberDictionarySize(indexedProperties, constants)
+}
 
-    const capacity = nextPowerOfTwo(Math.max(4, Math.ceil(indexedProperties * 1.5)))
-    // NumberDictionary has four prefix slots and three slots per bucket.
-    return align8(constants.fixedArrayHeader + (4 + capacity * 3) * constants.taggedSlot)
+/* Array elements path: `length` IS reflectable and is what V8 allocates for
+ * dense stores (new Array(n) and length-set both allocate n slots — measured
+ * in the calibration families). The fast-vs-dictionary decision approximates
+ * V8's real rule, which is per-write gap (kMaxGap ≈ 1024), via the maximum
+ * hole run between present indices (including the leading run); a huge
+ * length alone also forces dictionary mode (kMaxFastArrayLength). Two
+ * reflection-identical shapes remain undecidable and are documented in
+ * DESIGN.md: a preallocated tail (new Array(2000); a[1999]=x, really fast-
+ * holey) vs a written tail (a=[]; a[1999]=x), and write-grown spare
+ * capacity (~1.5×) vs literal exact capacity. */
+const KMAX_GAP = 1024
+const KMAX_FAST_ARRAY_LENGTH = 33_554_432
+function arrayElementsStoreSize(
+    length: number,
+    indexedProperties: number,
+    maxHoleRun: number,
+    constants: LayoutConstants,
+    slotWidth = constants.taggedSlot,
+): number {
+    const dictionary = maxHoleRun > KMAX_GAP || length > KMAX_FAST_ARRAY_LENGTH
+    if (dictionary) {
+        return indexedProperties === 0
+            ? numberDictionarySize(1, constants)
+            : numberDictionarySize(indexedProperties, constants)
+    }
+    if (length === 0) return 0 // the empty elements store is a shared singleton
+    return align8(constants.fixedArrayHeader + length * slotWidth)
 }
 
 function fastObjectSize(
@@ -297,8 +327,11 @@ export function estimateMemoryDetailed(
             let allNumeric = true
             let hasNonSmi = false
             let indexedProperties = 0
-            let maximumIndex = -1
             let customProperties = 0
+            // Integer keys arrive in ascending order (spec), so one pass
+            // yields the maximum hole run for the fast-vs-dictionary call.
+            let previousIndex = -1
+            let maxHoleRun = 0
             const indexedValues: unknown[] = []
             for (const key of keys) {
                 if (key === 'length') continue
@@ -316,7 +349,9 @@ export function estimateMemoryDetailed(
                 }
 
                 indexedProperties++
-                maximumIndex = Math.max(maximumIndex, Number(key))
+                const index = Number(key)
+                maxHoleRun = Math.max(maxHoleRun, index - previousIndex - 1)
+                previousIndex = index
                 if (!('value' in descriptor)) {
                     allNumeric = false
                     if (descriptor.get !== undefined) queue.push(descriptor.get)
@@ -327,11 +362,14 @@ export function estimateMemoryDetailed(
                 if (typeof descriptor.value !== 'number') allNumeric = false
                 else if (!isSmi(descriptor.value, layout)) hasNonSmi = true
             }
-            const dense = maximumIndex < indexedProperties * 2 + 1024
-            const doubleElements = dense && allNumeric && hasNonSmi
-            add('arrays', constants.arrayHeader + elementsStoreSize(
+            const dictionary =
+                maxHoleRun > KMAX_GAP || array.length > KMAX_FAST_ARRAY_LENGTH
+            const doubleElements =
+                !dictionary && allNumeric && hasNonSmi && indexedProperties > 0
+            add('arrays', constants.arrayHeader + arrayElementsStoreSize(
+                array.length,
                 indexedProperties,
-                maximumIndex,
+                maxHoleRun,
                 constants,
                 doubleElements ? 8 : constants.taggedSlot,
             ))

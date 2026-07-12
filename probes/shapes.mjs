@@ -94,6 +94,22 @@ export const shapes = {
             return value
         },
     },
+    // Round-2 regression families: the last-slot fill above masks
+    // preallocation (maxIndex+1 === length there). These two do not.
+    'array/prealloc-1000-empty': {
+        family: 'array',
+        count: 12_000,
+        make: () => new Array(1000),
+    },
+    'array/prealloc-32-front': {
+        family: 'array',
+        count: 35_000,
+        make: (index) => {
+            const value = new Array(32)
+            value[0] = index
+            return value
+        },
+    },
     'array/sparse-smi-100k': {
         family: 'sparse array',
         count: 25_000,
@@ -175,6 +191,8 @@ export const reducedShapeNames = [
     'array/packed-smi-32',
     'array/packed-double-32',
     'array/holey-smi-32',
+    'array/prealloc-1000-empty',
+    'array/prealloc-32-front',
     'array/sparse-smi-100k',
     'string/one-byte-64',
     'string/two-byte-64',

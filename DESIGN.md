@@ -53,13 +53,30 @@ fast accounting at every visible width, matching wide literals and
 `JSON.parse`; callers who know that mutation forced dictionary properties can
 select the `objectMode` override.
 
-An array is its shell plus an elements store. Dense tagged stores use one
-tagged slot per visible index, including holes. An all-numeric dense array
-with any non-SMI number is modeled as a FixedDoubleArray with eight-byte
-unboxed elements. Sparse reflected shapes use the observed NumberDictionary
-form: four prefix slots and three slots per capacity bucket. The same elements
-store model is added independently to fast- and dictionary-property objects.
-Element-kind and capacity history remain unobservable.
+An array is its shell plus an elements store. Dense stores are sized by
+`length` — the one reflectable quantity V8 actually allocates for:
+`new Array(n)` and a bare length-set both materialize n slots (both are
+calibration families). An all-numeric dense array with any non-SMI number
+is modeled as a FixedDoubleArray with eight-byte unboxed elements. The
+fast-vs-dictionary decision approximates V8's real per-write rule
+(kMaxGap ≈ 1024) with the maximum hole run between present indices,
+including the leading run; a length beyond kMaxFastArrayLength forces
+dictionary mode regardless. Dictionary stores use the observed
+NumberDictionary form: four prefix slots and three slots per capacity
+bucket. Plain objects have no preallocation idiom, so their elements
+stores are sized by maximum index instead.
+
+Two reflection-identical pairs stay undecidable, deliberately: a
+preallocated tail (`new Array(2000); a[1999] = x`, really fast-holey) is
+indistinguishable from a written one (`a = []; a[1999] = x`, really
+dictionary) — the gap rule picks the dictionary reading; and a write-grown
+array carries ~1.5× spare capacity that a literal-built twin lacks, so
+incrementally built spread-out arrays under-estimate by roughly the spare
+factor. Sparse double entries also run ~25% hot (dictionary-plus-boxed-
+HeapNumber modeling). Element-kind and capacity history remain
+unobservable; these are the residuals of that fact, and the calibration
+families are chosen adversarially against the estimator's branches rather
+than to flatter them.
 
 For current ordered collections, capacity is the next power of two at least
 as large as size, with minima of four for Map and eight for Set. A Map table
