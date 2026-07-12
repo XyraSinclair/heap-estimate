@@ -72,8 +72,8 @@ indistinguishable from a written one (`a = []; a[1999] = x`, really
 dictionary) — the gap rule picks the dictionary reading; and a write-grown
 array carries ~1.5× spare capacity that a literal-built twin lacks, so
 incrementally built spread-out arrays under-estimate by roughly the spare
-factor. Sparse double entries also run ~25% hot (dictionary-plus-boxed-
-HeapNumber modeling). Element-kind and capacity history remain
+factor. Small sparse dictionaries (one to a few entries) run ~25% hot;
+boxed-double entries likewise. Element-kind and capacity history remain
 unobservable; these are the residuals of that fact, and the calibration
 families are chosen adversarially against the estimator's branches rather
 than to flatter them.
