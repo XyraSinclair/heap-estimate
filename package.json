@@ -50,7 +50,9 @@
         "calibrate": "npm run build && node --expose-gc probes/calibrate.mjs --write-readme",
         "calibrate:ci": "npm run build && node --expose-gc probes/calibrate.mjs --reduced --gate",
         "bench": "npm run calibrate && node probes/bench.mjs",
-        "prepack": "npm run build"
+        "prepack": "npm run build",
+        "release": "npm publish --access public",
+        "prepublishOnly": "npm run test && npm run build"
     },
     "devDependencies": {
         "@types/node": "^24.0.0",
