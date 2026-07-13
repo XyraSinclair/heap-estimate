@@ -139,19 +139,18 @@ call charges zero for an already-seen subtree.
 
 V8 does not expose fast-vs-dictionary property mode to JavaScript.
 Construction history is therefore unobservable, so `objectMode: 'auto'`
-always uses fast-property accounting. This is the right default for the
-canonical cache-sizing case: an independent review measured a 30-key
-`JSON.parse` object at 261 B.
+uses fast-property accounting. This is the right default for parsed and
+literal cache-sizing fixtures: the checked-in calibration measures a
+30-key `JSON.parse` object at 264.6 B, while the estimator reports 264 B.
 
-Assignment-built objects can transition to dictionary properties at the same
-visible width. The review measured that 30-key case at 1,624 B, roughly six
-times the fast shape; auto/fast will underestimate it accordingly. Use
-`objectMode: 'dictionary'` when assignment or deletion history is known. The
-dictionary model estimates that measured 30-key case at exactly 1,624 B.
+Assignment and deletion can put a reflection-identical object into dictionary
+mode, where auto/fast may substantially underestimate it. Select
+`objectMode: 'dictionary'` when that construction history is known; for a
+30-key object, the two models estimate 264 B and 1,624 B respectively.
 
 ## Speed
 
-The estimator is a graph walk; the honest cost is proportional to reachable
+The estimator is a graph walk, so its cost is proportional to reachable
 values. On the 100-record mixed fixture in `probes/bench.mjs`, cyclebench
 measured:
 
@@ -197,6 +196,12 @@ drift. Run `npm run bench`; the complete report is written to
   addons are not.
 - Property getters are not invoked, but estimating a Proxy may execute its
   reflection traps.
+
+## Install
+
+```sh
+npm install heap-estimate
+```
 
 ## License
 
